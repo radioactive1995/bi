@@ -28,7 +28,7 @@ public static class FetchMultiple
         public const string ENDPOINT_ROUTE = "calendar-events";
         public static void Map(WebApplication app)
         {
-            app.MapGet(ENDPOINT_ROUTE, async (IHttpClientFactory factory, IFusionCache cache, IValidator<Request> validator, [AsParameters]Request request) =>
+            app.MapGet(ENDPOINT_ROUTE, async (IHttpClientFactory factory, IFusionCache cache, IValidator<Request> validator, IConfiguration config, [AsParameters]Request request) =>
             {
                 var valideringResultat = validator.Validate(request);
                 if (!valideringResultat.IsValid) return Results.ValidationProblem(ProcessErrorCodes(valideringResultat));
@@ -39,7 +39,7 @@ public static class FetchMultiple
                     using var client = factory.CreateClient();
 
                     var response = await client.GetFromJsonAsync<Response[]>(
-                            $"https://bi.no/apii/calendar-events?take={actualTake}&language={request?.Language}&campus={request?.Campus}&audience={request?.Audience}") ?? [];
+                            $"{config.GetRequiredSection("Endpoints:EventsApi").Value}?take={actualTake}&language={request?.Language}&campus={request?.Campus}&audience={request?.Audience}") ?? [];
 
                     return response;
                 }, tags: [ENDPOINT_ROUTE, request.CacheKey]);
