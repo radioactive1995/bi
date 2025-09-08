@@ -52,3 +52,5 @@ app.UseHttpsRedirection();
 FetchMultiple.Endpoint.Map(app);
 
 app.Run();
+
+public partial class Program {}
